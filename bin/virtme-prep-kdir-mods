@@ -24,12 +24,12 @@ ln -srfT . "$MODDIR/build"
 # Remove all preexisting symlinks and add symlinks to all modules that belong
 # to the build kenrnel.
 find "$MODDIR/kernel" -type l -print0 |xargs -0 rm -f --
-while read -r i; do
+sed 's:\.o$:.ko:' modules.order | while read -r i; do
+    echo "$i"
     [ ! -e "$i" ] && i=$(echo "$i" | sed s:^kernel/::)
     mkdir -p "$MODDIR/kernel/$(dirname "$i")"
     ln -sr "$i" "$MODDIR/kernel/$i"
-done < modules.order
-
+done
 
 # Link in the files that make modules_install would copy
 ln -srf modules.builtin modules.builtin.modinfo modules.order "$MODDIR/"
